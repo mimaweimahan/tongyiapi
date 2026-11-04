@@ -1,3 +1,5 @@
+> **BYOK 发行**：功能与部署见 [BYOK.md](./BYOK.md) · [功能文档](./docs/FEATURES.md) · [部署文档](./docs/DEPLOY.md)
+
 <div align="center">
 
 ![new-api](/web/public/logo.png)

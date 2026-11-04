@@ -1,0 +1,37 @@
+# BYOK 单机一键：从本仓库 Dockerfile 构建（含 BYOK），SQLite → ./data
+# 在仓库根目录执行：
+#   export SESSION_SECRET=$(openssl rand -hex 32)
+#   docker compose -f docs/docker-compose.byok.yml up -d --build
+#
+# ⚠️ 不要改用 calciumion/new-api:latest —— 官方镜像没有本仓 BYOK 改造。
+
+services:
+  new-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: tongyiapi-byok:local
+    container_name: tongyiapi-byok
+    restart: unless-stopped
+    command: --log-dir /app/logs
+    ports:
+      - "${BYOK_PORT:-3000}:3000"
+    volumes:
+      - ./data:/data
+      - ./logs:/app/logs
+    environment:
+      - TZ=Asia/Shanghai
+      - SESSION_SECRET=${SESSION_SECRET:?请先设置 SESSION_SECRET}
+      - ERROR_LOG_ENABLED=true
+      - BATCH_UPDATE_ENABLED=true
+      - NODE_NAME=tongyiapi-byok-1
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget -q -O - http://localhost:3000/api/status | grep -o '\"success\":\\s*true' || exit 1",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s

@@ -1,0 +1,23 @@
+# systemd 示例（源码编译二进制）
+# 1. go build -o /opt/tongyiapi/new-api .
+# 2. 复制本文件为 /etc/systemd/system/tongyiapi.service 并改路径
+# 3. systemctl daemon-reload && systemctl enable --now tongyiapi
+
+[Unit]
+Description=TongyiAPI BYOK (New API fork)
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/tongyiapi
+Environment=PORT=3000
+Environment=TZ=Asia/Shanghai
+Environment=SESSION_SECRET=CHANGE_ME
+ExecStart=/opt/tongyiapi/new-api --log-dir /opt/tongyiapi/logs
+Restart=on-failure
+RestartSec=5
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target
